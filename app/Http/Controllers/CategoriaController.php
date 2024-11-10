@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Categoria;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\CategoriaFormRequest;
 use Illuminate\Support\Facades\DB;
 
@@ -17,16 +18,11 @@ class CategoriaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index() //Request $request
     {
-        if ($request){
-            $query=trim($request->get('searchText'));
-            $categorias=DB::table('categoria')->where('categoria','LIKE','%'.$query.'%')
-            ->where('estado', '=', '1')
-            ->orderBy('id', 'desc')
-            ->paginate(7);
-            return view('almacen.categoria.index',["categoria"=>$categorias, "searchText"=>$query]);
-        }
+        $categorias = Categoria::orderBy('id', 'desc')->get();  // Obtener todas las categorías, ordenadas por 'id' descendente
+
+        return view('categoria.index', ['categoria' => $categorias]);
     }
 
     /**
@@ -34,7 +30,7 @@ class CategoriaController extends Controller
      */
     public function create()
     {
-        return view("almacen.categoria.create");
+        return view('categoria.create');
     }
 
     /**
@@ -42,12 +38,28 @@ class CategoriaController extends Controller
      */
     public function store(CategoriaFormRequest $request)
     {
-        $categoria=new Categoria;
-        $categoria->categoria=$request->get('categoria');
-        $categoria->descripcion=$request->get('descripcion');
-        $categoria->estado='1';
-        $categoria->save();
-        return Redirect::to('almacen/categoria');
+        try {
+            $categoria = new Categoria;
+            $categoria->categoria = $request->get('categoria');
+            $categoria->descripcion = $request->get('descripcion');
+            
+            if($categoria->save()) {
+                return redirect()
+                    ->route('categorias.index')
+                    ->with('success', 'Categoría creada exitosamente');
+            }
+        
+            return redirect()
+                ->back()
+                ->with('error', 'No se pudo guardar la categoría')
+                ->withInput();
+        
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Error al crear la categoría')
+                ->withInput();
+        }
     }
 
     /**
@@ -56,7 +68,7 @@ class CategoriaController extends Controller
     public function show($id)
     {
         $categoria=Categoria::findOrFail($id);
-        return view('almacen.categoria.show',["categoria"=>$categoria]);
+        return view('categoria.show',["categoria"=>$categoria]);
     }
 
     /**
@@ -65,7 +77,7 @@ class CategoriaController extends Controller
     public function edit($id)
     {
         $categoria=Categoria::findOrFail($id);
-        return view('almacen.categoria.edit',["categoria"=>$categoria]);
+        return view('categoria.edit',["categoria"=>$categoria]);
     }
 
     /**
@@ -79,7 +91,7 @@ class CategoriaController extends Controller
         $categoria->descripcion=$request->get('descripcion');
         $categoria->estado='1';
         $categoria->update();
-        return Redirect::to('almacen/categoria');
+        return Redirect::to('categoria');
     }
 
     /**
@@ -87,9 +99,21 @@ class CategoriaController extends Controller
      */
     public function destroy($id)
     {
-        $categoria=Categoria::findOrFail($id);
-        $categoria->estado='0';
-        $categoria->update();
-        return Redirect::to('almacen/categoria');
+        $message = '';
+        $categoria = Categoria::findOrFail($id);
+        
+        if ($categoria->estado == 1) {
+            $categoria->update([
+                'estado' => 0
+            ]);
+            $message = 'Categoría eliminada';
+        } else {
+            $categoria->update([
+                'estado' => 1
+            ]);
+            $message = 'Categoría restaurada';
+        }
+    
+        return redirect()->route('categorias.index')->with('success', $message);
     }
 }

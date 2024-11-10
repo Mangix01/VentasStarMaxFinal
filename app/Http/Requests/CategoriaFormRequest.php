@@ -24,17 +24,16 @@ class CategoriaFormRequest extends FormRequest
         switch ($this->method()){
             case 'POST': //Nuevo
                 $rules = [
-                    'categoria' => 'required|regex:/^[a-zA-Z0-9 ]+$/|min:5|max:50|unique:categorias,categoria', //solo letras numeros y espacios
+                    'categoria' => 'required|regex:/^[a-zA-Z0-9\s]+$/|min:5|max:50|unique:categorias,categoria', //solo letras numeros y espacios
                     'descripcion' => 'nullable|min:10|max:255', // Descripción no obligatoria, pero con mínimo y máximo
                 ];
                 break;
             case 'PATCH': //Edicion
                 $rules = [
-                    'categoria' => 'required|regex:/^[a-zA-Z0-9 ]+$/|min:5|max:50|unique:categorias,categoria,' . $this->route('categoria'), //solo letras numeros y espacios
+                    'categoria' => 'required|regex:/^[a-zA-Z0-9\s]+$/|min:5|max:50|unique:categorias,categoria,' . $this->route('categoria'), //solo letras numeros y espacios
                     'descripcion' => 'nullable|min:10|max:255', // Descripción no obligatoria, pero con mínimo y máximo
                 ];
                 break;
-            case 'DELETE';
             default;
         }
         return $rules;
