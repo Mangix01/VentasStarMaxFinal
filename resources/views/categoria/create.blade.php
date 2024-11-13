@@ -18,7 +18,7 @@
     </ol>
 
     <div class="card text-bg-light">
-        <form action="{{ route('categorias.store') }}" method="post">
+        <form action="{{ route('categorias.store') }}" method="POST">
         @csrf
             <div class="card-body">
                 <div class="row g-4">

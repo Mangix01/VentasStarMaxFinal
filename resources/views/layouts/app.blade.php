@@ -9,6 +9,9 @@
     <meta name="author" content="DaveCode">
 
     <title>Starmax Ventas - @yield('title')</title>
+    
+    <!-- Estilos para sweetAlert-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Custom fonts for this template-->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -108,6 +111,14 @@
     <script src="{{ asset('js/demo/chart-pie-demo.js') }}"></script>
 
     <script src="{{ asset('js/demo/datatables-demo.js') }}"></script>
+
+
+
+
+
+
+
+
 
 </body>
 

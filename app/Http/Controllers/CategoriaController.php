@@ -85,13 +85,22 @@ class CategoriaController extends Controller
      */
     public function update(CategoriaFormRequest $request, $id)
     {
-        $categoria=Categoria::findOrFail($id);
-
-        $categoria->categoria=$request->get('categoria');
-        $categoria->descripcion=$request->get('descripcion');
-        $categoria->estado='1';
-        $categoria->update();
-        return Redirect::to('categoria');
+        try {
+            $categoria = Categoria::findOrFail($id);
+            
+            $categoria->update([
+                'categoria' => $request->categoria,
+                'descripcion' => $request->descripcion
+            ]);
+    
+            return redirect()->route('categorias.index')
+                ->with('success', 'Categoría actualizada exitosamente');
+                
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error al actualizar la categoría')
+                ->withInput();
+        }
     }
 
     /**

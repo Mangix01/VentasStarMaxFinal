@@ -3,6 +3,27 @@
 @section('title','Categorías')
 
 @section('content')
+@if (session('success'))
+<script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+    Toast.fire({
+        icon: "success",
+        title: "Categoría Creada Exitosamente"
+    });
+</script>
+@endif
+
+
 <div class="container-fluid px-4">
     <h1 class="mt-4 text-center">Listado de Categorías</h1>
     <ol class="breadcrumb mb-4">
@@ -66,7 +87,7 @@
                                 <div class="d-flex justify-content-center align-items-center gap-2">
                                     <!-- Boton de Editar -->
                                     <button type="button" class="btn btn-light btn-sm border-0" title="Editar">
-                                        <a href="{{ route('categorias.edit', ['categoria' => $cat->id]) }}" class="text-dark text-decoration-none">
+                                        <a href="{{ route('categorias.edit', $cat->id) }}" class="text-dark text-decoration-none">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     </button>
@@ -74,29 +95,51 @@
                                     <!-- Separador Vertical -->
                                     <div class="vr"></div>
 
-                                    <!-- Botón Eliminar/Restaurar -->
-                                    @if ($cat->estado == 1)
-                                        <form action="{{ route('categorias.destroy', $cat->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-light btn-sm border-0" title="Eliminar">
-                                                <i class="far fa-trash-can text-danger"></i>
-                                            </button>
-                                        </form>
-                                    @else
-                                        <form action="{{ route('categorias.destroy', $cat->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-light btn-sm border-0" title="Restaurar">
-                                                <i class="fas fa-rotate text-success"></i>
-                                            </button>
-                                        </form>
-                                    @endif
+                                    <!-- Botón para activar modal de Eliminacion y Restauracion -->
+                                    <button type="button" class="btn btn-light btn-sm border-0" data-toggle="modal" data-target="#confirmModal-{{ $cat->id }}" title="{{ $cat->estado == 1 ? 'Eliminar' : 'Restaurar' }}">
+                                        @if ($cat->estado == 1)
+                                            <i class="far fa-trash-can text-danger"></i>
+                                        @else
+                                            <i class="fas fa-rotate text-success"></i>
+                                        @endif
+                                    </button>
+
                                 </div>
                             </td>
                         </tr>
 
-
+                        <!-- Modal de Confirmación para cada categoría -->
+                        <div class="modal fade" id="confirmModal-{{ $cat->id }}" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel-{{ $cat->id }}" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="confirmModalLabel-{{ $cat->id }}">
+                                            {{ $cat->estado == 1 ? 'Confirmar Eliminación' : 'Confirmar Restauración' }}
+                                        </h5>
+                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">×</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @if ($cat->estado == 1)
+                                            ¿Estás seguro que deseas eliminar la categoría <strong>{{ $cat->categoria }}</strong>?
+                                        @else
+                                            ¿Estás seguro que deseas restaurar la categoría <strong>{{ $cat->categoria }}</strong>?
+                                        @endif
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                                        <form action="{{ route('categorias.destroy', $cat->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn {{ $cat->estado == 1 ? 'btn-danger' : 'btn-success' }}">
+                                                {{ $cat->estado == 1 ? 'Sí, eliminar' : 'Sí, restaurar' }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @endforeach
                     </tbody>
                 </table>

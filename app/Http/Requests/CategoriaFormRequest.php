@@ -21,20 +21,33 @@ class CategoriaFormRequest extends FormRequest
      */
     public function rules(): array
     {
-        switch ($this->method()){
-            case 'POST': //Nuevo
+        switch ($this->method()) {
+            case 'POST':
                 $rules = [
-                    'categoria' => 'required|regex:/^[a-zA-Z0-9\s]+$/|min:5|max:50|unique:categorias,categoria', //solo letras numeros y espacios
-                    'descripcion' => 'nullable|min:10|max:255', // Descripción no obligatoria, pero con mínimo y máximo
+                    'categoria' => [
+                        'required',
+                        'regex:/^[\pL\s\d]+$/u', // Esta regex permite letras (incluyendo ñ y tildes), espacios y números
+                        'min:5',
+                        'max:50',
+                        'unique:categorias,categoria'
+                    ],
+                    'descripcion' => 'nullable|min:10|max:255',
                 ];
                 break;
-            case 'PATCH': //Edicion
+            case 'PATCH':
                 $rules = [
-                    'categoria' => 'required|regex:/^[a-zA-Z0-9\s]+$/|min:5|max:50|unique:categorias,categoria,' . $this->route('categoria'), //solo letras numeros y espacios
-                    'descripcion' => 'nullable|min:10|max:255', // Descripción no obligatoria, pero con mínimo y máximo
+                    'categoria' => [
+                        'required',
+                        'regex:/^[\pL\s\d]+$/u',
+                        'min:5',
+                        'max:50',
+                        'unique:categorias,categoria,' . $this->route('categoria')
+                    ],
+                    'descripcion' => 'nullable|min:10|max:255',
                 ];
                 break;
-            default;
+            default:
+                $rules = [];
         }
         return $rules;
     }
