@@ -37,7 +37,7 @@
     <div id="collapseAlmacen" class="collapse" aria-labelledby="headingAlmacen" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Componentes de Almacen:</h6>
-            <a class="collapse-item" href="productos.html"><i class="fas fa-box me-2" style="margin-right: 10px;"></i>Productos</a>
+            <a class="collapse-item" href="{{ route('productos.index') }}"><i class="fas fa-box me-2" style="margin-right: 10px;"></i>Productos</a>
             <a class="collapse-item" href="{{ route('categorias.index') }}"><i class="fas fa-tags me-2" style="margin-right: 10px;"></i>Categorías</a>
         </div>
     </div>
